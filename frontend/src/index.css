@@ -1,0 +1,750 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Outfit', sans-serif;
+
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  
+  --color-accent-emerald: #10b981;
+  --color-accent-indigo: #6366f1;
+  --color-accent-rose: #f43f5e;
+
+  --color-dark-bg: #090d16;
+  --color-dark-surface: #0f172a;
+  --color-dark-card: #141e33;
+  --color-dark-border: #1e293b;
+}
+
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism surfaces */
+.glass-panel-dark {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Text Gradients */
+.text-gradient-blue {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-emerald {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, #a78bfa 0%, #818cf8 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Background Meshes */
+.bg-mesh-dark {
+  background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 45%),
+              radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.08), transparent 45%),
+              #090d16;
+}
+
+.bg-mesh-light {
+  background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 35%),
+              radial-gradient(circle at bottom left, rgba(224, 231, 255, 0.5), transparent 45%),
+              #f8fafc;
+}
+
+/* Dynamic Hover Effects */
+.job-card-hover {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.job-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(59, 130, 246, 0.15);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
+}
+
+/* Keyframes */
+@keyframes laserSweep {
+  0% { top: 0%; opacity: 0.8; }
+  50% { top: 100%; opacity: 1; }
+  100% { top: 0%; opacity: 0.8; }
+}
+
+.animate-laser {
+  animation: laserSweep 2s infinite ease-in-out;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   REAL-TIME MAP WIDGET STYLES (OpenStreetMap + React Leaflet)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* Map Widget Wrapper */
+.map-widget-wrapper {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+}
+
+/* Header */
+.map-widget-header {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+}
+
+@media (min-width: 640px) {
+  .map-widget-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.map-widget-title-section {
+  flex: 1;
+}
+
+.map-widget-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.map-widget-subtitle {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 3px 0 0 0;
+}
+
+.map-widget-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Locate Me Button */
+.map-locate-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px -3px rgba(59, 130, 246, 0.4);
+  white-space: nowrap;
+}
+
+.map-locate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -3px rgba(59, 130, 246, 0.5);
+}
+
+.map-locate-btn.map-locate-loading {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+/* Distance Slider */
+.map-distance-slider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #020617;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+}
+
+.map-distance-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.map-distance-label strong {
+  color: #fff;
+}
+
+.map-range-input {
+  width: 90px;
+  accent-color: #3b82f6;
+  height: 4px;
+  background: #1e293b;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .map-range-input {
+    width: 120px;
+  }
+}
+
+/* Coordinates Bar */
+.map-coords-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  font-size: 10px;
+  color: #94a3b8;
+  background: rgba(2, 6, 23, 0.5);
+  border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+}
+
+.map-coords-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.map-coord-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.map-coord-item strong {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  color: #fff;
+  font-weight: 700;
+}
+
+.map-coord-icon {
+  color: #3b82f6;
+}
+
+.map-coord-status {
+  font-weight: 700;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.map-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.map-status-live {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: pulseDot 2s infinite;
+}
+
+.map-status-pending {
+  background: #f59e0b;
+  animation: pulseDot 1s infinite;
+}
+
+.map-status-manual {
+  background: #3b82f6;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.map-coords-hint {
+  font-size: 9px;
+  color: #3b82f6;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Error Banner */
+.map-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 11px;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.08);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.15);
+}
+
+/* Map Container */
+.map-container-wrapper {
+  position: relative;
+  width: 100%;
+  height: 340px;
+}
+
+@media (min-width: 768px) {
+  .map-container-wrapper {
+    height: 380px;
+  }
+}
+
+.map-leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: #0a0f1c;
+}
+
+/* Dark mode filter for standard OpenStreetMap tiles */
+.map-leaflet-container .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.1) saturate(0.6);
+}
+
+/* Leaflet Overrides for Dark Theme */
+.map-leaflet-container .leaflet-control-attribution {
+  background: rgba(15, 23, 42, 0.85) !important;
+  color: #64748b !important;
+  font-size: 9px !important;
+  border-radius: 6px 0 0 0 !important;
+  border: none !important;
+  padding: 2px 8px !important;
+}
+
+.map-leaflet-container .leaflet-control-attribution a {
+  color: #3b82f6 !important;
+}
+
+.map-leaflet-container .leaflet-control-zoom {
+  border: 1px solid #1e293b !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.map-leaflet-container .leaflet-control-zoom a {
+  background: #0f172a !important;
+  color: #e2e8f0 !important;
+  border-color: #1e293b !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  font-size: 16px !important;
+}
+
+.map-leaflet-container .leaflet-control-zoom a:hover {
+  background: #1e293b !important;
+  color: #fff !important;
+}
+
+/* ─── User Location Marker ──────────────────────────────────────────────────── */
+
+.user-location-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.user-marker-container {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-marker-pulse {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.08);
+  animation: userPulse 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.user-marker-pulse-delay {
+  animation-delay: 1.2s;
+}
+
+@keyframes userPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.user-marker-dot {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  border: 3px solid #fff;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+/* ─── Job Location Markers ──────────────────────────────────────────────────── */
+
+.job-location-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.job-marker-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.job-marker-pin {
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+  transition: transform 0.2s ease;
+}
+
+.job-marker-container:hover .job-marker-pin {
+  transform: scale(1.2) translateY(-3px);
+}
+
+.job-marker-standard .job-marker-pin {
+  color: #10b981;
+}
+
+.job-marker-emergency .job-marker-pin {
+  color: #f43f5e;
+  animation: emergencyBounce 1.5s infinite;
+}
+
+@keyframes emergencyBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.job-marker-shadow {
+  width: 10px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  margin-top: -2px;
+}
+
+/* ─── Popup Styles ──────────────────────────────────────────────────────────── */
+
+.leaflet-popup-content-wrapper {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.6) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-tip {
+  background: #0f172a !important;
+  border: 1px solid #1e293b !important;
+  box-shadow: none !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 12px !important;
+  color: #e2e8f0 !important;
+  line-height: 1.5 !important;
+  width: auto !important;
+}
+
+.leaflet-popup-close-button {
+  color: #64748b !important;
+  font-size: 18px !important;
+  top: 6px !important;
+  right: 8px !important;
+  z-index: 10;
+}
+
+.leaflet-popup-close-button:hover {
+  color: #f43f5e !important;
+}
+
+.map-popup-content {
+  padding: 14px 16px;
+  min-width: 220px;
+  max-width: 280px;
+}
+
+/* User Popup */
+.map-popup-user-content {
+  text-align: center;
+}
+
+.map-popup-user-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.map-popup-coords {
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  color: #94a3b8;
+  margin: 4px 0;
+}
+
+.map-popup-note {
+  font-size: 10px;
+  color: #64748b;
+  margin: 4px 0 0 0;
+}
+
+/* Job Popup */
+.map-popup-emergency-badge {
+  background: linear-gradient(135deg, #f43f5e, #e11d48);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.map-popup-job-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.map-popup-company {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #3b82f6;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.map-popup-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.map-popup-info-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: rgba(30, 41, 59, 0.5);
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(51, 65, 85, 0.4);
+}
+
+.map-popup-icon-green { color: #10b981; }
+.map-popup-icon-blue { color: #3b82f6; }
+.map-popup-icon-purple { color: #a78bfa; }
+.map-popup-icon-amber { color: #f59e0b; }
+
+.map-popup-location {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.map-popup-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.map-popup-skill-tag {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.map-popup-skill-more {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 3px 6px;
+  color: #64748b;
+}
+
+.map-popup-hours {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.map-popup-geofence {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #1e293b;
+  text-align: center;
+}
+
+/* ─── Floating Legend ───────────────────────────────────────────────────────── */
+
+.map-floating-legend {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+}
+
+.map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.map-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.map-legend-user {
+  background: #3b82f6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.5);
+}
+
+.map-legend-standard {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+.map-legend-emergency {
+  background: #f43f5e;
+  box-shadow: 0 0 6px rgba(244, 63, 94, 0.5);
+}
+
+.map-legend-circle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px dashed #64748b;
+  flex-shrink: 0;
+}
+
+/* Job Count Badge */
+.map-job-count-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+  padding: 7px 13px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #60a5fa;
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* Spinning icon animation */
+.map-icon-spin {
+  animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
